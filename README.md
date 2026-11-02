@@ -54,22 +54,12 @@ python run_e1.py --device cuda
 - `summary.json`
 - `interpret/path_prototypes.json` `path_weight_matrix.npz`
 
-最好那折的权重会复制到 `checkpoints/e1_health_vs_nstemi/best.pt` 供 E2 迁移。
-
 ### 4. E2 子实验
 ```
 python run_e2.py --mode primary        # NSTEMI vs 非 NSTEMI 混合
 python run_e2.py --mode nstemi-stemi   # 头对头
 python run_e2.py --mode multiclass --subcats STEMI 心肌病  # 多分类
 ```
-
-## 快速自定义
-
-- 路径规模：改 `configs.PathConfig.max_paths` / `max_length` / `top_k_paths`
-- 图结构：`GraphConfig.forward_cross_neighborhood` (4 或 8) / `use_dynamic_edges`
-- 训练：`TrainConfig.epochs` / `n_folds` / `focal_gamma` / `backbone_lr_scale`
-
-命令行也支持 `--epochs --folds --batch-size --device --output-tag`。
 
 ## 关键设计对应
 
@@ -87,10 +77,3 @@ python run_e2.py --mode multiclass --subcats STEMI 心肌病  # 多分类
 | 路径原型（top-K + 激活率） | `interpret._class_prototypes` |
 | 类别差异路径（Welch-t + BH-FDR） | `interpret._class_differentiating_paths` |
 | 路径稳定性（跨折 Jaccard） | `interpret.path_stability_across_folds` |
-
-## 未做的（有意留白）
-
-- **临床医生 review 的 ROI/路径合理性**：等你有资源再补
-- **心动周期分段的人工金标准**：目前完全用 node_edge.py 的自动检测（`landmark_source == "auto_heuristic"`）
-- **消融实验**：`configs.py` 里所有开关（`use_dynamic_edges`, `add_forward_cross_edges` 等）都能作为 ablation 的对照实验
-- **CAG 亚型 E3**：需要罪犯血管标签，标签表里目前只有 CAG=0/1
